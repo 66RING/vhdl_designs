@@ -22,7 +22,7 @@ entity fifo_ring is
 	);
 end entity;
 
-architecture behav of fifo_ring is
+    architecture behav of fifo_ring is
 	-- 读指针寄存器
 	component write_pointer is
 		generic( depth : positive);
