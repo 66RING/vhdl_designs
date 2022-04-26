@@ -37,8 +37,8 @@ entity testbench is
 end testbench;
 
 architecture Behavioral of testbench is
-	signal a: std_logic_vector(7 downto 0) := "00110011";
-	signal b: std_logic_vector(7 downto 0) := "00110011";
+	signal a: std_logic_vector(7 downto 0) := "11111111";
+	signal b: std_logic_vector(7 downto 0) := "00000011";
 	signal cin: std_logic;
 	signal s: std_logic_vector(7 downto 0);
 	signal cout: std_logic;
@@ -50,13 +50,12 @@ begin
 
 	process
 	begin
-		a <= a + 16;
-		a <= a + 8;
 		cin <= '0';
-		wait for T * 8;
-
+		wait for T;
 		cin <= '1';
-		wait for T * 8;
+		wait for T;
+		a <= a + 8;
+		b <= b + 4;
 	end process;
 
 end Behavioral;

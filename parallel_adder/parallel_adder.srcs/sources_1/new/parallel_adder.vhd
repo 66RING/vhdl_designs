@@ -60,12 +60,6 @@ begin
 	cout <= g(7) or (p(7) and (g(6) or (p(6) and (g(5) or (p(5) and (g(4) or (p(4) and (g(3) or (p(3) and (g(2) or (p(2) and g(1)) or (p(2) and p(1) and g(0)) or (p(2) and p(1) and p(0) and cin)))))))))));
 
 
-	-- 本组进位传递条件
-	-- ???
-	pp <= p(0) and p(1) and p(2) and p(3);
-	gg <= g(3) or (p(3) and g(2)) or (p(3) and p(2) and g(1)) or (p(3) and p(2) and p(1) and g(0));
-
-
 	-- 和输出
 	s(0) <= p(0) xor cin;
 	s(1) <= p(1) xor c(1);
