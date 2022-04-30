@@ -7,7 +7,7 @@ use ieee.std_logic_signed.all;
 -- 除法运算前，应满足条件：X<Y,且 Y≠0,否则，按溢出或非法除数处理；
 
 entity div8_behavior is
-	generic ( width : positive := 8);
+	generic ( width : positive := 9);
 	-- X / Y = D mod A
 	port(
 		clk, rst: in std_logic;
@@ -22,6 +22,7 @@ end entity;
 
 
 architecture beh of div8_behavior is
+	signal ay, any: std_logic_vector(width-1 downto 0) := (others => '0');
 begin
 	process(rst)
 		variable DA: std_logic_vector(width*2-2 downto 0) := (others => '0');
@@ -42,6 +43,9 @@ begin
 			DA(width*2-2 downto width-1) := '0' & X(width-2 downto 0);
 			absY := '0' & Y(width-2 downto 0);
 			absNY := not ('0' & Y(width-2 downto 0)) + '1';
+
+			ay <= absY;
+			any <= absNY;
 
 			R := '0';
 			-- 左移

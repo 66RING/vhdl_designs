@@ -2,7 +2,7 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date: 04/06/2022 05:10:13 PM
+-- Create Date: 04/30/2022 03:30:10 PM
 -- Design Name: 
 -- Module Name: testbench - Behavioral
 -- Project Name: 
@@ -21,7 +21,6 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_unsigned.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -37,41 +36,33 @@ entity testbench is
 end testbench;
 
 architecture Behavioral of testbench is
-	signal a: std_logic_vector(7 downto 0);
-	signal b: std_logic_vector(7 downto 0);
-	signal result: std_logic_vector(15 downto 0);
-	signal clk : std_logic;
-	signal rst : std_logic := '0';
+	signal clk, reset: std_logic;
+	signal clk1, nclk1: std_logic := '0';
+	signal clk2, nclk2: std_logic := '0';
+	signal w0, w1, w2, w3: std_logic := '0';
 
-    constant T : time := 50 ns;
-	constant R : time := T * 4;
+	constant T: time := 20 ns;
 
-	signal ta: std_logic_vector(7 downto 0) := (others=>'1');
-	signal tb: std_logic_vector(7 downto 0) := (others=>'1');
 begin
-UUT: entity work.multi2 port map(clk, rst, a, b, result);
+	U: entity work.clk_gen port map(clk, reset, clk1,nclk1,clk2,nclk2,w0,w1,w2,w3);
 
-process
-begin
-	-- continuous clock
-	clk <= '0';
-	wait for T/2;
-	clk <= '1';
-	wait for T/2;
-end process;
+	process
+	begin
+		clk <= '0';
+		wait for T/2;
+		clk <= '1';
+		wait for T/2;
+	end process;
 
+	tb: process
+	begin
+		reset <= '0';
+		wait for T;
+		reset <= '1';
+		wait for T;
 
-process
-begin
-	a <= ta;
-	b <= tb;
-	rst <= '1';
-	wait for T;
-	rst <= '0';
-	ta <= ta + 16;
-	tb <= tb + 64;
-	wait for T;
-end process;
+		wait;
+	end process;
+
 
 end Behavioral;
-

@@ -42,6 +42,7 @@ architecture Behavioral of testbench is
 	signal Y: std_logic_vector(7 downto 0);
 	signal D, A: std_logic_vector(7 downto 0);
 
+	constant T : time := 20 ns;
 	-- signal X: std_logic_vector(3 downto 0) := (others=>'0');
 	-- signal Y: std_logic_vector(3 downto 0);
 	-- signal D, A: std_logic_vector(3 downto 0);
@@ -52,12 +53,31 @@ begin
 
 	process
 	begin
+
 		rst <= '1';
 		X <= "00100000";
 		Y <= "01000000";
-		wait for 20 ns;
+		wait for T;
 		rst <= '0';
-		wait for 20 ns;
+		wait for T * 4;
+		rst <= '1';
+		X <= "00100000";
+		Y <= "01100000";
+		wait for T;
+		rst <= '0';
+		wait for T * 4;
+		rst <= '1';
+		X <= "01000101";
+		Y <= "01110000";
+		wait for T;
+		rst <= '0';
+		wait for T * 4;
+		rst <= '1';
+		X <= "01100000";
+		Y <= "01110000";
+		wait for T;
+		rst <= '0';
+		wait for T * 4;
 
 
 		-- rst <= '1';
