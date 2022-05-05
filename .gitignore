@@ -4,3 +4,14 @@
 *.sim
 *.wcfg
 *.runs
+
+*.log
+
+*.jou
+
+ALU/ALU.srcs/sources_1/new/74181d.vhd.org__
+ALU/ALU.srcs/sources_1/new/74181d.vhd.~1~
+lab2_archive/ALU_1/ALU.srcs/sources_1/new/74181d.vhd.org__
+lab2_archive/ALU_1/ALU.srcs/sources_1/new/74181d.vhd.~1~
+lab2_archive/ALU_1/ALU_v18_1
+ALU_ARCHIVE/ALU_ARCHIVE.zip
