@@ -96,9 +96,9 @@ begin
 			-- F1 <= (others=>'0');
 			-- cout1 <= '0';
 			-- cout2 <= '0';
-		elsif clk_ALU'event and clk_ALU = '1' then
+		elsif nALU_EN = '0' then
 		-- elsif nreset = '1' then
-			if nALU_EN = '0' then
+			if clk_ALU'event and clk_ALU = '1' then
 				S_inner <= S;
 
 				-- PSW
@@ -157,9 +157,9 @@ begin
 				else				-- if not shift
 					data <= F;
 				end if;
-			else
-				data <= (others=>'Z');
 			end if;
+		else
+			data <= (others=>'Z');
 		end if;
 
 

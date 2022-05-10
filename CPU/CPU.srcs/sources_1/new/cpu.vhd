@@ -195,9 +195,9 @@ architecture beh of cpu is
 begin
 	U_clocker: clk_gen port map(clk, nreset, clk1, nclk1, clk2, nclk2, w0, w1, w2, w3);
 
-	-- -- TODO ALU输出到哪??没有锁存
-	-- TODO ALU 有问题，影响data
-	-- TODO fuckin alu
+	-- -- -- TODO ALU输出到哪??没有锁存
+	-- -- TODO ALU 有问题，影响data
+	-- -- TODO fuckin alu
 	-- U_ALU: alu port map(nclk2, nreset, M_A, M_B, M_F, nALU_EN, nPSW_EN, C0,
 	-- 				   -- S, F, data, AC, CY, ZN, OV);
 	-- 				   S, F, data, AC, CY, ZN, OV);
@@ -207,8 +207,8 @@ begin
 	-- ??
 	-- TODO
 	U_pc: pc port map(nclk2,nreset,nLD_PC,M_PC,nPCH,nPCL,
-					-- new_pc, 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
-					IR_reg&"000000", 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
+					new_pc, 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
+					-- IR_reg&"000000", 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
 					rom_addr_reg, 	-- TODO ???
 					data); 			-- PC送总线，两次送 nPCH, nPCL
 
