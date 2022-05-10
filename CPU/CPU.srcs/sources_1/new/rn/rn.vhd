@@ -16,6 +16,7 @@ entity RN is
 	port(
 		clk_RN: in std_logic;						-- RN时钟信号
 		nreset: in std_logic;						-- 复位
+		Rn_CS: in std_logic;						-- RD RS disorder
 		nRi_EN: in std_logic; 						-- RN寄存器使能 (低电平有效)
 		RDRi, WRRi: in std_logic;					-- RN读写信号
 		RS: in	std_logic;							-- 源寄存器地址(0,1中选一个)
@@ -27,7 +28,7 @@ architecture beh of RN is
 	signal R0: std_logic_vector(7 downto 0);
 	signal R1: std_logic_vector(7 downto 0);
 begin
-	process(clk_RN)
+	process(clk_RN, nRi_EN)
 	begin
 		if nreset = '0' then
 			-- 复位
@@ -40,10 +41,18 @@ begin
 				if nRi_EN = '0' then -- 如果RN寄存器使能
 					if RDRi = '1' then
 						-- !!!!ZZZZZZZZ”的目的是“为输出端置为高阻态
-						if RS = '0' then	-- 源寄存器选择R0, 从R0读
-							data <= R0;
-						elsif RS = '1' then -- 源寄存器选择R1，从R1读
-							data <= R1;
+						if Rn_CS = '1' then
+							if RS = '0' then	-- 源寄存器选择R0, 从R0读
+								data <= R0;
+							elsif RS = '1' then -- 源寄存器选择R1，从R1读
+								data <= R1;
+							end if;
+						elsif Rn_CS = '0' then
+							if RS = '0' then	-- 交换顺序
+								data <= R1;
+							elsif RS = '1' then
+								data <= R0;
+							end if;
 						end if;
 					elsif WRRi = '1' then
 						if RD = '0' then

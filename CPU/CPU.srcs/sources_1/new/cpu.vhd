@@ -82,6 +82,7 @@ architecture beh of cpu is
 		port(
 			clk_RN: in std_logic;						-- RN时钟信号
 			nreset: in std_logic;						-- 复位
+			Rn_CS: in std_logic;						-- RD RS disorder(read mode only)
 			nRi_EN: in std_logic; 						-- RN寄存器使能 (低电平有效)
 			RDRi, WRRi: in std_logic;					-- RN读写信号
 			RS: in	std_logic;							-- 源寄存器地址(0,1中选一个)
@@ -193,14 +194,15 @@ architecture beh of cpu is
 	signal result: std_logic_vector(7 downto 0);
 	-- TODO temp
 begin
+
 	U_clocker: clk_gen port map(clk, nreset, clk1, nclk1, clk2, nclk2, w0, w1, w2, w3);
 
-	-- -- -- TODO ALU输出到哪??没有锁存
-	-- -- TODO ALU 有问题，影响data
-	-- -- TODO fuckin alu
-	-- U_ALU: alu port map(nclk2, nreset, M_A, M_B, M_F, nALU_EN, nPSW_EN, C0,
-	-- 				   -- S, F, data, AC, CY, ZN, OV);
-	-- 				   S, F, data, AC, CY, ZN, OV);
+	-- -- TODO ALU输出到哪??没有锁存
+	-- TODO ALU 有问题，影响data
+	-- TODO fuckin alu
+	U_ALU: alu port map(nclk2, nreset, M_A, M_B, M_F, nALU_EN, nPSW_EN, C0,
+					   -- S, F, data, AC, CY, ZN, OV);
+					   S, F, data, AC, CY, ZN, OV);
 
 
 	-- TODO clk
@@ -224,14 +226,23 @@ begin
 
 
 	-- 设M_uA <= w0
-	-- TODO CMROM_CS
+	-- TODO CMROM_CS hard code 1
 	U_CM: micro_controler port map(clk2, nreset, IR_reg, w0, '1', CM_reg);
 
 
 	-- nRi_EN 微码 错误？？？
 	-- U_RN: RN port map(nclk2, nreset, not nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
 	-- U_RN: RN port map(nclk2, nreset, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
-	U_RN: RN port map(nclk2, nreset, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
+
+	-- TODO!!!!!!
+	-- TODO!!!!!! -- change nclk2 -> nclk1
+	-- TODO!!!!!!
+
+	-- TODO modify
+	-- TODO Rn_CS = 1 => rs is rs; Rn_CS = 0 => rs is rd; since we read from rs only
+	-- TODO only work in read mode
+	-- TODO modify
+	U_RN: RN port map(nclk1, nreset, Rn_CS, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
 
 
 	U_SP: sp port map((clk1 and clk2 and w1), nreset, SP_CS, SP_UP, SP_DN, nSP_EN, ar_reg, data);

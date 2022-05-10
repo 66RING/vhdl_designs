@@ -80,12 +80,16 @@ begin
 	regA: octal_dff port map(regA_sel, nreset, data, QA);
 	regB: octal_dff port map(regB_sel, nreset, data, QB);
 
-	alu1: alu181d port map(S_inner(4 downto 1), S_inner(0), QA(3 downto 0), QB(3 downto 0), C0, cout1, F1); 
+	alu1: alu181d port map(S(4 downto 1), S(0), QA(3 downto 0), QB(3 downto 0), C0, cout1, F1); 
 
-	alu3: alu181 port map(S_inner(4 downto 1), S_inner(0), QA, QB, C0, cout2, OV_out, F); 
+	alu3: alu181 port map(S(4 downto 1), S(0), QA, QB, C0, cout2, OV_out, F); 
+
+	-- alu1: alu181d port map(S_inner(4 downto 1), S_inner(0), QA(3 downto 0), QB(3 downto 0), C0, cout1, F1); 
+
+	-- alu3: alu181 port map(clk_ALU, S_inner(4 downto 1), S_inner(0), QA, QB, C0, cout2, OV_out, F); 
 
 
-	process(clk_ALU, nreset, nPSW_EN, M_F)
+	process(clk_ALU, nreset, nALU_EN, nPSW_EN, M_F)
 		variable QA_F:  std_logic_vector(7 downto 0); 	-- ÔÝ´æÆ÷A
 		variable cnt:  std_logic_vector(7 downto 0); 	-- ÔÝ´æÆ÷A
 	begin
