@@ -37,13 +37,15 @@ begin
 	begin
 		if nreset = '0' then
 			data <= (others=>'Z');
-		elsif clk_RAM'event and clk_RAM = '1' and RAM_CS = '1' then
-			if wr_nRD = '1' then
-				data <= (others=>'Z');
-				ram(conv_integer(AR)) <= data;
-			elsif wr_nRD = '0' then
-				if nRAM_EN = '0' then
-					data <= ram(conv_integer(AR));
+		elsif RAM_CS = '1' then
+			if clk_RAM'event and clk_RAM = '1'then
+				if wr_nRD = '1' then
+					data <= (others=>'Z');
+					ram(conv_integer(AR)) <= data;
+				elsif wr_nRD = '0' then
+					if nRAM_EN = '0' then
+						data <= ram(conv_integer(AR));
+					end if;
 				end if;
 			end if;
 		else

@@ -12,3 +12,6 @@
 
 - 改
 	* TODO: add ri, rj -> add ri, #data : ri = ri + #data
+
+- 为什么边沿有时候读到前一段，有时候读到后一段???
+- TODO 片选都是异步的！！！！！！！！

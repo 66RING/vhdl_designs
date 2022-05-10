@@ -17,6 +17,7 @@
 00111100 	-- 3CH mov sp, #data(40H)
 01000000
 10000000 	-- 80H Push ri(r0)
+10000110 	-- 84H pop ri(r1)
 01110110 	-- 74H SUB Ri(r1), Rj(r0)
 01110110 	-- 74H SUB Ri(r1), Rj(r0)
 01110110 	-- 74H SUB Ri(r1), Rj(r0)

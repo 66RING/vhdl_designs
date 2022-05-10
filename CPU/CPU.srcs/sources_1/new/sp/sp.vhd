@@ -32,26 +32,27 @@ end entity;
 architecture beh of sp is
 	-- SP容量
 	type ram_t is array(2**6 - 1 downto 0) of std_logic_vector(7 downto 0);
-	signal SP: std_logic_vector(6 downto 0);
+	-- signal SP: std_logic_vector(6 downto 0);
 	-- signal stack: ram_t;
 begin
 
 	process(clk_SP, nreset, SP_CS, SP_DN, SP_UP, nSP_EN)
+		variable SP: std_logic_vector(6 downto 0);
 	begin
 		if nreset = '0' then
-			SP <= (others=>'0');
+			SP := (others=>'0');
 			AR <= (others=>'0');
 			data <= (others=>'Z');
 		elsif clk_SP'event and clk_SP = '1' then
 			if SP_CS = '0' then
-				SP <= data(6 downto 0);
+				SP := data(6 downto 0);
 			elsif SP_CS = '1' then
 				if nSP_EN = '0' then 	-- SP输出使能
 					if SP_UP = '1' then
-						SP <= SP + 1;
 						AR <= SP;
+						SP := SP + 1;
 					elsif SP_DN = '1' then
-						SP <= SP - 1;
+						SP := SP - 1;
 						AR <= SP;
 					end if;
 				else
@@ -60,28 +61,6 @@ begin
 			else
 				AR <= (others=>'Z');
 			end if;
-
-
-			-- if SP_CS = '1' then
-			-- 	-- 存储功能：置sp
-			-- 	-- TODO 应该是和ram交互的
-			-- 	if nSP_EN = '1' then
-			-- 		-- data <= (others=>'Z');
-			-- 		-- TODO
-			-- 		SP <= data(6 downto 0);
-			-- 		AR <= (others=>'Z');
-			-- 	elsif nSP_EN='0' then
-			-- 	-- TODO in case of stack overflow
-			-- 		if SP_UP = '1' then
-			-- 			SP <= SP + 1;
-			-- 			AR <= SP;
-			-- 		elsif SP_DN = '1' then
-			-- 			SP <= SP - 1;
-			-- 			AR <= SP;
-			-- 		end if;
-			-- 	end if;
-			-- end if;
-
 		end if;
 	end process;
 
