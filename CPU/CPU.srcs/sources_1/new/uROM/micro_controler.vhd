@@ -13,6 +13,8 @@ entity micro_controler is
 	generic (WORDLENGTH : integer := 48;
 			ADDRLENGTH : integer := 8);
 	port(
+		uAR_out : out std_logic_vector(ADDRLENGTH-1 downto 0);
+
 		clk_MC: in std_logic;
 		nreset: in std_logic;
 		IR: in std_logic_vector(7 downto 2) := (others=>'0'); -- IR操作码信息
@@ -41,6 +43,7 @@ architecture beh of micro_controler is
 	signal uIR: std_logic_vector(WORDLENGTH-1 downto 0);
 
 begin
+	uAR_out <= uAR;
 
 	-- TODO clk_MC ???
 	-- may be we can M_uA <= W0

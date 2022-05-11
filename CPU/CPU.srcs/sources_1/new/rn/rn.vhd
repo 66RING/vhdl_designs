@@ -14,6 +14,10 @@ use ieee.std_logic_1164.all;
 
 entity RN is
 	port(
+		R0_out: out std_logic_vector(7 downto 0);
+		R1_out: out std_logic_vector(7 downto 0);
+		
+
 		clk_RN: in std_logic;						-- RN时钟信号
 		nreset: in std_logic;						-- 复位
 		Rn_CS: in std_logic;						-- RD RS disorder
@@ -28,6 +32,9 @@ architecture beh of RN is
 	signal R0: std_logic_vector(7 downto 0);
 	signal R1: std_logic_vector(7 downto 0);
 begin
+	R0_out <= R0;
+	R1_out <= R1;
+
 	process(clk_RN, nRi_EN)
 	begin
 		if nreset = '0' then
@@ -47,11 +54,11 @@ begin
 							elsif RS = '1' then -- 源寄存器选择R1，从R1读
 								data <= R1;
 							end if;
-						elsif Rn_CS = '0' then
-							if RS = '0' then	-- 交换顺序
-								data <= R1;
-							elsif RS = '1' then
+						elsif Rn_CS = '0' then 	-- 根据RD选
+							if RD = '0' then
 								data <= R0;
+							elsif RD = '1' then
+								data <= R1;
 							end if;
 						end if;
 					elsif WRRi = '1' then

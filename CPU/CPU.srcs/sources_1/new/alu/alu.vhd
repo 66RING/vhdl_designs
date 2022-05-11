@@ -100,6 +100,10 @@ begin
 			-- F1 <= (others=>'0');
 			-- cout1 <= '0';
 			-- cout2 <= '0';
+			AC <= '0';
+			CY <= '0';
+			ZN <= '0';
+			OV <= '0';
 		elsif nALU_EN = '0' then
 		-- elsif nreset = '1' then
 			if clk_ALU'event and clk_ALU = '1' then
@@ -119,6 +123,7 @@ begin
 					AC <= '0';
 					CY <= '0';
 					ZN <= '0';
+					OV <= '0';
 				end if;
 
 

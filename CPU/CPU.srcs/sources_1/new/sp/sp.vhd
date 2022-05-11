@@ -13,6 +13,8 @@ use ieee.numeric_std.all;
 
 entity sp is
 	port(
+		SP_out: out std_logic_vector(7 downto 0);
+
 		clk_SP: in std_logic;
 		nreset: in std_logic;
 		SP_CS: in std_logic;
@@ -39,6 +41,8 @@ begin
 	process(clk_SP, nreset, SP_CS, SP_DN, SP_UP, nSP_EN)
 		variable SP: std_logic_vector(6 downto 0);
 	begin
+		SP_out <= '0' & SP;
+
 		if nreset = '0' then
 			SP := (others=>'0');
 			AR <= (others=>'0');

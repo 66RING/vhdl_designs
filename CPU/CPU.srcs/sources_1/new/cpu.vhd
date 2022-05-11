@@ -2,14 +2,33 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity cpu is
-	port(clk: in std_logic;
+	port(
+		clk_LED: in std_logic;
+		seg_sel : out std_logic_vector(15 downto 0);
+		seg_data : out std_logic_vector(7 downto 0);
+
+		clk: in std_logic;
 		nreset: in std_logic);
 end entity;
 
 architecture beh of cpu is
+	component seg_dis is
+		generic( 
+				clk_MHz: integer:=50;
+				t_REF_uS: integer:=1000		-- 8K the same purpose
+				);
+		port(
+			clk,rst : in std_logic ;
+			data_in_A,data_in_B,data_in_C,data_in_D : in std_logic_vector(15 downto 0);
+			seg_sel : out std_logic_vector(15 downto 0);
+			seg_data : out std_logic_vector(7 downto 0)
+			);
+	end component;
 
 	component sp is
 		port(
+			SP_out: out std_logic_vector(7 downto 0);
+
 			clk_SP: in std_logic;
 			nreset: in std_logic;
 			SP_CS: in std_logic;
@@ -56,6 +75,8 @@ architecture beh of cpu is
 		generic (WORDLENGTH : integer := 48;
 				ADDRLENGTH : integer := 8);
 		port(
+			uAR_out : out std_logic_vector(ADDRLENGTH-1 downto 0);
+
 			clk_MC: in std_logic;
 			nreset: in std_logic;
 			IR: in std_logic_vector(7 downto 2); -- IR操作码信息
@@ -80,6 +101,9 @@ architecture beh of cpu is
 	-- clk_RN = nclk2
 	component RN is
 		port(
+			R0_out: out std_logic_vector(7 downto 0);
+			R1_out: out std_logic_vector(7 downto 0);
+
 			clk_RN: in std_logic;						-- RN时钟信号
 			nreset: in std_logic;						-- 复位
 			Rn_CS: in std_logic;						-- RD RS disorder(read mode only)
@@ -192,8 +216,25 @@ architecture beh of cpu is
 	signal OV: std_logic; -- 溢出标志
 
 	signal result: std_logic_vector(7 downto 0);
+
+
+
+
+	signal data_in_A,data_in_B,data_in_C,data_in_D : std_logic_vector(15 downto 0);
+
+	signal CY_L, ZN_L: std_logic;
 	-- TODO temp
 begin
+
+	-- uAR, SP, R1, R0
+	U_led: seg_dis port map(clk_LED, not nreset, data_in_A, data_in_B, data_in_C,
+						   data_in_D, seg_sel, seg_data);
+
+	data_in_D(15 downto 8) <= (others=>'0');
+	data_in_C(15 downto 8) <= (others=>'0');
+	data_in_B(15 downto 8) <= (others=>'0');
+	data_in_A(15 downto 8) <= (others=>'0');
+
 
 	U_clocker: clk_gen port map(clk, nreset, clk1, nclk1, clk2, nclk2, w0, w1, w2, w3);
 
@@ -227,7 +268,7 @@ begin
 
 	-- 设M_uA <= w0
 	-- TODO CMROM_CS hard code 1
-	U_CM: micro_controler port map(clk2, nreset, IR_reg, w0, '1', CM_reg);
+	U_CM: micro_controler port map(data_in_D(7 downto 0), clk2, nreset, IR_reg, w0, '1', CM_reg);
 
 
 	-- nRi_EN 微码 错误？？？
@@ -242,10 +283,10 @@ begin
 	-- TODO Rn_CS = 1 => rs is rs; Rn_CS = 0 => rs is rd; since we read from rs only
 	-- TODO only work in read mode
 	-- TODO modify
-	U_RN: RN port map(nclk1, nreset, Rn_CS, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
+	U_RN: RN port map(data_in_A(7 downto 0), data_in_B(7 downto 0), nclk1, nreset, Rn_CS, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
 
 
-	U_SP: sp port map((clk1 and clk2 and w1), nreset, SP_CS, SP_UP, SP_DN, nSP_EN, ar_reg, data);
+	U_SP: sp port map(data_in_C(7 downto 0), (clk1 and clk2 and w1), nreset, SP_CS, SP_UP, SP_DN, nSP_EN, ar_reg, data);
 
 	U_RAM: ram port map((nclk1 and w1), nreset, RAM_CS, nRAM_EN, wr_nRD, ar_reg, data);
 
@@ -303,7 +344,31 @@ begin
 	nAREN <= CM_reg(24);
 
 	M_PC <= CM_reg(23);
-	nLD_PC <= CM_reg(22);
+
+	p_ldpc: process(nALU_EN, CM_reg(22), IR_reg)
+		variable CY_T, ZN_T: std_logic;
+	begin
+
+		-- latch
+		if nALU_EN'event and nALU_EN = '1' then
+			CY_T := CY;
+			ZN_T := ZN;
+			CY_L <= CY;
+			ZN_L <= ZN;
+		end if;
+
+		if IR_reg = "100011" then -- if JZ
+			nLD_PC <= not ZN_L;
+		elsif IR_reg = "100100" then -- if JC
+			nLD_PC <= not CY_L;
+		else
+			nLD_PC <= CM_reg(22);
+		end if;
+	end process;
+
+	-- nLD_PC <= CM_reg(22);
+
+
 	nPCH <= CM_reg(21);
 	nPCL <= CM_reg(20);
 

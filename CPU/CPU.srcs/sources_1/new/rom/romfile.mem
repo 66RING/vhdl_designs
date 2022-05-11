@@ -12,16 +12,19 @@
 00100110	-- 24H mov R1, AAH
 10101010	-- AAH
 00101001 	-- 28H: mov ri(bit1), rj(bit2): r0 <- r1
-00100100	-- 24H mov RI, data
+00100100	-- 24H mov RI(r0), data
 11111111	-- 11H
 00111100 	-- 3CH mov sp, #data(40H)
 01000000
 10000000 	-- 80H Push ri(r0)
 10000110 	-- 84H pop ri(r1)
 01100101	-- 64H add Ri(r0), Rj(r1)
-01110110 	-- 74H SUB Ri(r1), Rj(r0)
 01111010 	-- 78H AL Ri(r1), Rj(r0)
 01111110 	-- 7CH AR Ri(r1), Rj(r0)
-10001000 	-- 88H jmp addr 00H
-00000000 	-- 
+01110100 	-- 74H SUB Ri(r1), Rj(r0)
+10001100 	-- 8CH jz addr
+00000000 	--
+00000000 	-- 12 bit of pc
+10001000 	-- 88H jmp addr 005H
+00000000 	--
 00000000 	-- 12 bit of pc

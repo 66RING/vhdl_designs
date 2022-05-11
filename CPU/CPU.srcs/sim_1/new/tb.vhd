@@ -36,13 +36,18 @@ entity tb is
 end tb;
 
 architecture Behavioral of tb is
+	signal clk_LED: std_logic;
+	signal seg_sel : std_logic_vector(15 downto 0);
+	signal seg_data : std_logic_vector(7 downto 0);
+
+
 	signal clk: std_logic;
 	signal nreset: std_logic;
 
 	constant T: time := 20 ns;
 begin
 
-	U: entity work.cpu port map(clk, nreset);
+	U: entity work.cpu port map(clk, seg_sel, seg_data,clk, nreset);
 
 	process
 	begin
