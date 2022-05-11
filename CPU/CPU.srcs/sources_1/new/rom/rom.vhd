@@ -17,7 +17,8 @@ entity rom is
 		M_ROM: in std_logic;						-- ROM片选信号
 		ROM_EN: in std_logic; 						-- ROM使能信号
 		addr: in std_logic_vector(11 downto 0); 	-- ROM地址信号
-		data: inout std_logic_vector(7 downto 0)	-- 数据总线
+		-- data: inout std_logic_vector(7 downto 0)	-- 数据总线
+		romout: out std_logic_vector(7 downto 0)	-- 数据总线
 	);
 
 	-- port(
@@ -56,10 +57,10 @@ begin
 	begin
 		if M_ROM = '1' and ROM_EN = '1' then 		-- 如果片选选中，且使能
 			if clk_ROM'event and clk_ROM = '1' then
-				data <= rom(conv_integer(addr));
+				romout <= rom(conv_integer(addr));
 			end if;
 		else 
-			data <= (others=>'Z');
+			romout <= (others=>'Z');
 		end if;
 	end process;
 

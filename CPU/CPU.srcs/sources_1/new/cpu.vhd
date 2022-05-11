@@ -36,7 +36,8 @@ architecture beh of cpu is
 			SP_DN: in std_logic;
 			nSP_EN: in std_logic;
 			AR: out std_logic_vector(6 downto 0);		-- sp输出ram地址
-			data: inout std_logic_vector(7 downto 0));
+			-- data: inout std_logic_vector(7 downto 0));
+			spin: in std_logic_vector(7 downto 0));
 	end component;
 
 	component ram is
@@ -47,7 +48,9 @@ architecture beh of cpu is
 			nRAM_EN: in std_logic;		-- 输出使能
 			wr_nRD: in std_logic;		-- 读写信号1读，0写
 			AR: in std_logic_vector(6 downto 0);	-- 地址信号
-			data: inout std_logic_vector(7 downto 0));
+			-- data: inout std_logic_vector(7 downto 0));
+			ramin: in std_logic_vector(7 downto 0);
+			ramout: out std_logic_vector(7 downto 0));
 	end component;
 
 	component clk_gen is
@@ -66,7 +69,8 @@ architecture beh of cpu is
 			M_ROM: in std_logic; -- ROM片选信号
 			ROM_EN: in std_logic; -- ROM使能信号
 			addr: in std_logic_vector(11 downto 0); -- ROM地址信号
-			data: inout std_logic_vector(7 downto 0)	-- 数据总线
+			-- data: inout std_logic_vector(7 downto 0)	-- 数据总线
+			romout: out std_logic_vector(7 downto 0)	-- 数据总线
 		);
 	end component;
 
@@ -94,7 +98,8 @@ architecture beh of cpu is
 			nPCH, nPCL: in std_logic;	-- PC输出总线控制信号，分两次送H表示高位
 			PC: in std_logic_vector(11 downto 0);		-- PC指针, 来自IR
 			ADDR: out std_logic_vector(11 downto 0);	-- ROM读地址输出
-			d: inout std_logic_vector(7 downto 0) 		-- PC数值输出到数据总线
+			pcout: out std_logic_vector(7 downto 0) 		-- PC数值输出到数据总线
+			-- d: inout std_logic_vector(7 downto 0) 		-- PC数值输出到数据总线
 		);
 	end component;
 
@@ -111,7 +116,9 @@ architecture beh of cpu is
 			RDRi, WRRi: in std_logic;					-- RN读写信号
 			RS: in	std_logic;							-- 源寄存器地址(0,1中选一个)
 			RD: in	std_logic; 							-- 目的寄存器地址
-			data: inout std_logic_vector(7 downto 0));	-- 数据总线
+			-- data: inout std_logic_vector(7 downto 0));	-- 数据总线
+			rnin: in std_logic_vector(7 downto 0);	-- 数据总线
+			rnout: out std_logic_vector(7 downto 0));	-- 数据总线
 	end component;
 
 	-- nclk2
@@ -123,7 +130,7 @@ architecture beh of cpu is
 			nARen: in std_logic; 						-- AR使能
 			-- 为什么data是inout时出问题是UU呢？？
 			-- data: inout std_logic_vector(7 downto 0);	-- 数据总线
-			data: in std_logic_vector(7 downto 0);	-- 数据总线
+			irin: in std_logic_vector(7 downto 0);	-- 数据总线
 			IR: out std_logic_vector(7 downto 2);		-- IR地址编码
 			PC: out std_logic_vector(11 downto 0);		-- PC新地址
 			AR: out std_logic_vector(6 downto 0); 		-- RAM读写地址  6bit(低2bit做寄存器)
@@ -142,7 +149,9 @@ architecture beh of cpu is
 			C0: in std_logic;		-- 进位位输入
 			S: in std_logic_vector(4 downto 0); 	-- 运算类型和操作选择
 			F_in: in std_logic_vector(1 downto 0); 	-- 移位功能选择
-			data: inout std_logic_vector(7 downto 0); 	-- 数据总线
+			-- data: inout std_logic_vector(7 downto 0); 	-- 数据总线
+			aluin: in std_logic_vector(7 downto 0); 	-- 数据总线
+			aluout: out std_logic_vector(7 downto 0); 	-- 数据总线
 			AC: out std_logic; 	-- 半进位标志
 			CY: out std_logic; 	-- 进位标志
 			ZN: out std_logic; 	-- 零标志
@@ -223,7 +232,18 @@ architecture beh of cpu is
 	signal data_in_A,data_in_B,data_in_C,data_in_D : std_logic_vector(15 downto 0);
 
 	signal CY_L, ZN_L: std_logic;
+
 	-- TODO temp
+	signal aluin: std_logic_vector(7 downto 0);
+	signal aluout: std_logic_vector(7 downto 0);
+	signal pcout: std_logic_vector(7 downto 0);
+	signal romout: std_logic_vector(7 downto 0);
+	signal irin: std_logic_vector(7 downto 0);
+	signal rnin: std_logic_vector(7 downto 0);
+	signal rnout: std_logic_vector(7 downto 0);
+	signal spin: std_logic_vector(7 downto 0);
+	signal ramin: std_logic_vector(7 downto 0);
+	signal ramout: std_logic_vector(7 downto 0);
 begin
 
 	-- uAR, SP, R1, R0
@@ -243,7 +263,7 @@ begin
 	-- TODO fuckin alu
 	U_ALU: alu port map(nclk2, nreset, M_A, M_B, M_F, nALU_EN, nPSW_EN, C0,
 					   -- S, F, data, AC, CY, ZN, OV);
-					   S, F, data, AC, CY, ZN, OV);
+					   S, F, aluin, aluout, AC, CY, ZN, OV);
 
 
 	-- TODO clk
@@ -253,13 +273,14 @@ begin
 					new_pc, 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
 					-- IR_reg&"000000", 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
 					rom_addr_reg, 	-- TODO ???
-					data); 			-- PC送总线，两次送 nPCH, nPCL
+					-- data); 			-- PC送总线，两次送 nPCH, nPCL
+					pcout); 			-- PC送总线，两次送 nPCH, nPCL
 
 
-	U_rom: rom port map((clk2 and nclk1), M_ROM, not nROM_EN, rom_addr_reg, data);
+	U_rom: rom port map((clk2 and nclk1), M_ROM, not nROM_EN, rom_addr_reg, romout);
 
 
-	U_ir: IR port map(nclk2, nreset, LDIR1, LDIR2, LDIR3, nAREN, data,
+	U_ir: IR port map(nclk2, nreset, LDIR1, LDIR2, LDIR3, nAREN, irin,
 					 IR_reg, 
 					 new_pc,
 					 -- rom_addr_reg,
@@ -283,15 +304,30 @@ begin
 	-- TODO Rn_CS = 1 => rs is rs; Rn_CS = 0 => rs is rd; since we read from rs only
 	-- TODO only work in read mode
 	-- TODO modify
-	U_RN: RN port map(data_in_A(7 downto 0), data_in_B(7 downto 0), nclk1, nreset, Rn_CS, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
+	U_RN: RN port map(data_in_A(7 downto 0), data_in_B(7 downto 0), nclk1, nreset, Rn_CS, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, rnin, rnout);
 
 
-	U_SP: sp port map(data_in_C(7 downto 0), (clk1 and clk2 and w1), nreset, SP_CS, SP_UP, SP_DN, nSP_EN, ar_reg, data);
+	U_SP: sp port map(data_in_C(7 downto 0), (clk1 and clk2 and w1), nreset, SP_CS, SP_UP, SP_DN, nSP_EN, ar_reg, spin);
 
-	U_RAM: ram port map((nclk1 and w1), nreset, RAM_CS, nRAM_EN, wr_nRD, ar_reg, data);
+	U_RAM: ram port map((nclk1 and w1), nreset, RAM_CS, nRAM_EN, wr_nRD, ar_reg, ramin, ramout);
 
 
 
+	aluin <= rnout;
+
+	rnin <= aluout when nALU_EN = '0' else
+			romout when (M_ROM = '1' and nROM_EN = '0') else
+			rnout when RDRi = '0' else
+			ramout when nRAM_EN = '0' else
+			(others => 'Z');
+
+	irin <= romout when nROM_EN = '0';
+
+	spin <= romout when nROM_EN = '0';
+
+	ramin <= romout when nRAM_EN = '0' else
+			 rnout when nRi_EN = '0' else
+			 (others => 'Z');
 
 
 

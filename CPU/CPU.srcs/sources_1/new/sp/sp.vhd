@@ -22,7 +22,8 @@ entity sp is
 		SP_DN: in std_logic;
 		nSP_EN: in std_logic;
 		AR: out std_logic_vector(6 downto 0);		-- sp输出ram地址
-		data: inout std_logic_vector(7 downto 0));
+		-- data: inout std_logic_vector(7 downto 0));
+		spin: in std_logic_vector(7 downto 0));
 end entity;
 
 
@@ -46,10 +47,10 @@ begin
 		if nreset = '0' then
 			SP := (others=>'0');
 			AR <= (others=>'0');
-			data <= (others=>'Z');
+			-- data <= (others=>'Z');
 		elsif clk_SP'event and clk_SP = '1' then
 			if SP_CS = '0' then
-				SP := data(6 downto 0);
+				SP := spin(6 downto 0);
 			elsif SP_CS = '1' then
 				if nSP_EN = '0' then 	-- SP输出使能
 					if SP_UP = '1' then

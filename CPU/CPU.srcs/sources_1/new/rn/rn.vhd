@@ -25,7 +25,9 @@ entity RN is
 		RDRi, WRRi: in std_logic;					-- RN读写信号
 		RS: in	std_logic;							-- 源寄存器地址(0,1中选一个)
 		RD: in	std_logic; 							-- 目的寄存器地址
-		data: inout std_logic_vector(7 downto 0));	-- 数据总线
+		-- data: inout std_logic_vector(7 downto 0));	-- 数据总线
+		rnin: in std_logic_vector(7 downto 0);	-- 数据总线
+		rnout: out std_logic_vector(7 downto 0));	-- 数据总线
 end entity;
 
 architecture beh of RN is
@@ -42,7 +44,7 @@ begin
 			R0 <= (others=>'0');
 			R1 <= (others=>'0');
 			-- !!!!!!!!!!
-			data <= (others=>'Z');
+			-- data <= (others=>'Z');
 		else
 			if clk_RN'event and clk_RN = '1' then
 				if nRi_EN = '0' then -- 如果RN寄存器使能
@@ -50,28 +52,26 @@ begin
 						-- !!!!ZZZZZZZZ”的目的是“为输出端置为高阻态
 						if Rn_CS = '1' then
 							if RS = '0' then	-- 源寄存器选择R0, 从R0读
-								data <= R0;
+								rnout <= R0;
 							elsif RS = '1' then -- 源寄存器选择R1，从R1读
-								data <= R1;
+								rnout <= R1;
 							end if;
 						elsif Rn_CS = '0' then 	-- 根据RD选
 							if RD = '0' then
-								data <= R0;
+								rnout <= R0;
 							elsif RD = '1' then
-								data <= R1;
+								rnout <= R1;
 							end if;
 						end if;
 					elsif WRRi = '1' then
 						if RD = '0' then
-							data <= (others=>'Z');
-							R0 <= data;
+							R0 <= rnin;
 						elsif RD = '1' then
-							data <= (others=>'Z');
-							R1 <= data;
+							R1 <= rnin;
 						end if;
 					end if;
 				else
-					data <= (others=>'Z');
+					-- data <= (others=>'Z');
 				end if;
 			end if;
 		end if;

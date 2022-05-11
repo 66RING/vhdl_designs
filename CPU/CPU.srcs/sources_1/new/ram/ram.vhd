@@ -16,7 +16,9 @@ entity ram is
 		nRAM_EN: in std_logic;		-- 输出使能
 		wr_nRD: in std_logic;		-- 读写信号1读，0写
 		AR: in std_logic_vector(6 downto 0);	-- 地址信号
-		data: inout std_logic_vector(7 downto 0));
+		-- data: inout std_logic_vector(7 downto 0));
+		ramin: in std_logic_vector(7 downto 0);
+		ramout: out std_logic_vector(7 downto 0));
 end entity;
 
 
@@ -36,20 +38,22 @@ begin
 	process(clk_RAM, nreset, nRAM_EN, wr_nRD)
 	begin
 		if nreset = '0' then
-			data <= (others=>'Z');
+			-- data <= (others=>'Z');
+			ramout <= (others=>'Z');
 		elsif RAM_CS = '1' then
-			if clk_RAM'event and clk_RAM = '1'then
+			if clk_RAM'event and clk_RAM = '0' then
 				if wr_nRD = '1' then
-					data <= (others=>'Z');
-					ram(conv_integer(AR)) <= data;
+					-- data <= (others=>'Z');
+					ram(conv_integer(AR)) <= ramin;
 				elsif wr_nRD = '0' then
 					if nRAM_EN = '0' then
-						data <= ram(conv_integer(AR));
+						ramout <= ram(conv_integer(AR));
 					end if;
 				end if;
 			end if;
 		else
-			data <= (others=>'Z');
+			ramout <= (others=>'Z');
+			-- data <= (others=>'Z');
 		end if;
 		-- TODO 其他case 是否需要Z
 	end process;

@@ -18,7 +18,9 @@ entity alu is
 		C0: in std_logic;		-- 进位位输入
 		S: in std_logic_vector(4 downto 0); 	-- 运算类型和操作选择
 		F_in: in std_logic_vector(1 downto 0); 	-- 移位功能选择
-		data: inout std_logic_vector(7 downto 0); 	-- 数据总线
+		-- data: inout std_logic_vector(7 downto 0); 	-- 数据总线
+		aluin: in std_logic_vector(7 downto 0); 	-- 数据总线
+		aluout: out std_logic_vector(7 downto 0); 	-- 数据总线
 		AC: out std_logic; 	-- 半进位标志
 		CY: out std_logic; 	-- 进位标志
 		ZN: out std_logic; 	-- 零标志
@@ -77,8 +79,8 @@ begin
 	regA_sel <= M_A and clk_ALU;
 	regB_sel <= M_B and clk_ALU;
 
-	regA: octal_dff port map(regA_sel, nreset, data, QA);
-	regB: octal_dff port map(regB_sel, nreset, data, QB);
+	regA: octal_dff port map(regA_sel, nreset, aluin, QA);
+	regB: octal_dff port map(regB_sel, nreset, aluin, QB);
 
 	alu1: alu181d port map(S(4 downto 1), S(0), QA(3 downto 0), QB(3 downto 0), C0, cout1, F1); 
 
@@ -162,13 +164,13 @@ begin
 							QA_F(6 downto 0) := QA_F(7 downto 1);
 						end loop;
 					end if;
-					data <= QA_F;
+					aluout <= QA_F;
 				else				-- if not shift
-					data <= F;
+					aluout <= F;
 				end if;
 			end if;
 		else
-			data <= (others=>'Z');
+			aluout <= (others=>'Z');
 		end if;
 
 

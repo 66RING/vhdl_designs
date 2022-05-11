@@ -17,7 +17,7 @@ entity IR is
 		nARen: in std_logic; 						-- AR使能
 		-- 为什么data是inout时出问题是UU呢？？
 		-- data: inout std_logic_vector(7 downto 0);	-- 数据总线
-		data: in std_logic_vector(7 downto 0);	-- 数据总线
+		irin: in std_logic_vector(7 downto 0);	-- 数据总线
 		IR: out std_logic_vector(7 downto 2);		-- IR地址编码
 		PC: out std_logic_vector(11 downto 0);		-- PC新地址
 		AR: out std_logic_vector(6 downto 0); 		-- RAM读写地址  6bit(低2bit做寄存器)
@@ -40,18 +40,18 @@ begin
 				-- LD_IR1,2,3不能同时有效
 				if LD_IR1 = '1' then	-- 传送指令到微程序控制器
 					-- 从ROM获取到的数据
-					IR <= data(7 downto 2);
-					RD <= data(1);
-					RS <= data(0);
+					IR <= irin(7 downto 2);
+					RD <= irin(1);
+					RS <= irin(0);
 				elsif LD_IR2 = '1' then
 					-- 分两次传送PC新地址LD_IR2, 3
-					PC(11 downto 8) <= data(3 downto 0);
+					PC(11 downto 8) <= irin(3 downto 0);
 				elsif LD_IR3 = '1' then
 					-- 第二次传输低8位
-					PC(7 downto 0) <= data;
+					PC(7 downto 0) <= irin;
 					-- 区分RAM操作，只有是RAM操作才会给AR输出
 					if nARen = '0' then
-						AR(6 downto 0) <= data(6 downto 0);
+						AR(6 downto 0) <= irin(6 downto 0);
 					end if;
 				else
 					AR <= (others=>'Z');
