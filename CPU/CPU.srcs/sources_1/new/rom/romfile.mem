@@ -20,6 +20,8 @@
 10000110 	-- 84H pop ri(r1)
 01100101	-- 64H add Ri(r0), Rj(r1)
 01110110 	-- 74H SUB Ri(r1), Rj(r0)
+01111010 	-- 78H AL Ri(r1), Rj(r0)
+01111110 	-- 7CH AR Ri(r1), Rj(r0)
 10001000 	-- 88H jmp addr 00H
 00000000 	-- 
 00000000 	-- 12 bit of pc
