@@ -26,7 +26,7 @@ begin
 	begin
 		-- d<= (others=>'Z');
 		if nreset = '0' then
-			ADDR <= (others=>'0');
+			-- ADDR <= (others=>'0');
 			pc_reg <= (others=>'0');
 			-- d<= (others=>'Z');
 		else
