@@ -87,7 +87,14 @@ begin
 
 		--
 		M_uA <= '1';
-		IR <= "011011";
+		IR <= "010010";
+		wait for T;
+		M_uA <= '0';
+		wait for T * 3;
+
+		--
+		M_uA <= '1';
+		IR <= "011001";
 		wait for T;
 		M_uA <= '0';
 		wait for T * 3;
