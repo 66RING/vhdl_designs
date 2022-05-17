@@ -66,6 +66,7 @@ architecture beh of cpu is
 				ADDRLENGTH : integer := 12);
 		port(
 			clk_ROM: in std_logic; -- ROM时钟信号
+			nreset: in std_logic;
 			M_ROM: in std_logic; -- ROM片选信号
 			ROM_EN: in std_logic; -- ROM使能信号
 			addr: in std_logic_vector(11 downto 0); -- ROM地址信号
@@ -244,6 +245,7 @@ architecture beh of cpu is
 	signal spin: std_logic_vector(7 downto 0);
 	signal ramin: std_logic_vector(7 downto 0);
 	signal ramout: std_logic_vector(7 downto 0);
+
 begin
 
 	-- uAR, SP, R1, R0
@@ -271,13 +273,12 @@ begin
 	-- TODO
 	U_pc: pc port map(nclk2,nreset,nLD_PC,M_PC,nPCH,nPCL,
 					new_pc, 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
-					-- IR_reg&"000000", 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
 					rom_addr_reg, 	-- TODO ???
 					-- data); 			-- PC送总线，两次送 nPCH, nPCL
 					pcout); 			-- PC送总线，两次送 nPCH, nPCL
 
 
-	U_rom: rom port map((clk2 and nclk1), M_ROM, not nROM_EN, rom_addr_reg, romout);
+	U_rom: rom port map((clk2 and nclk1), nreset, M_ROM, not nROM_EN, rom_addr_reg, romout);
 
 
 	U_ir: IR port map(nclk2, nreset, LDIR1, LDIR2, LDIR3, nAREN, irin,
@@ -289,7 +290,7 @@ begin
 
 	-- 设M_uA <= w0
 	-- TODO CMROM_CS hard code 1
-	U_CM: micro_controler port map(data_in_D(7 downto 0), clk2, nreset, IR_reg, w0, '1', CM_reg);
+	U_CM: micro_controler port map(data_in_D(7 downto 0), clk2, nreset, IR_reg, w0, nreset, CM_reg);
 
 
 	-- nRi_EN 微码 错误？？？
@@ -315,13 +316,13 @@ begin
 
 	aluin <= rnout;
 
-	rnin <= aluout when nALU_EN = '0' else
-			romout when (M_ROM = '1' and nROM_EN = '0') else
+	rnin <= romout when (M_ROM = '1' and nROM_EN = '0') else
+		   	aluout when nALU_EN = '0' else
 			rnout when RDRi = '0' else
 			ramout when nRAM_EN = '0' else
 			(others => 'Z');
 
-	irin <= romout when nROM_EN = '0';
+	irin <= romout when nROM_EN = '0' or nreset = '0';
 
 	spin <= romout when nROM_EN = '0';
 

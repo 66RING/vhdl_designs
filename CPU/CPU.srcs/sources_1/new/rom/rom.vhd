@@ -14,6 +14,7 @@ entity rom is
 			ADDRLENGTH : integer := 8);
 	port(
 		clk_ROM: in std_logic; 						-- ROM时钟信号
+		nreset: in std_logic;
 		M_ROM: in std_logic;						-- ROM片选信号
 		ROM_EN: in std_logic; 						-- ROM使能信号
 		addr: in std_logic_vector(11 downto 0); 	-- ROM地址信号
@@ -55,7 +56,9 @@ begin
 
 	process(clk_ROM, M_ROM, ROM_EN)
 	begin
-		if M_ROM = '1' and ROM_EN = '1' then 		-- 如果片选选中，且使能
+		if nreset = '0' then
+			romout <= rom(0);
+		elsif M_ROM = '1' and ROM_EN = '1' then 		-- 如果片选选中，且使能
 			if clk_ROM'event and clk_ROM = '1' then
 				romout <= rom(conv_integer(addr));
 			end if;

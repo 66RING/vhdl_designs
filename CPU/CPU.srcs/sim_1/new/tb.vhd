@@ -59,8 +59,16 @@ begin
 
 	tb: process
 	begin
+		-- nreset <= '1';
+		-- wait for T;
 		nreset <= '0';
-		wait for T;
+		wait for T*2;
+		nreset <= '1';
+
+		wait for T*5 + T/2;
+
+		nreset <= '0';
+		wait for T*2;
 		nreset <= '1';
 		wait;
 	end process;

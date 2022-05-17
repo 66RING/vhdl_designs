@@ -19,9 +19,10 @@ architecture beh of clk_gen is
 begin
 	clk1 <= clk;
 	nclk1 <= not clk;
-
-	nclk2 <= not t_clk2;
-	clk2 <= t_clk2;
+	nclk2 <= not t_clk2 when reset = '1' else
+			'0';
+	clk2 <= t_clk2 when reset = '1' else
+			'0';
 
 	C2: process(clk, reset)
 	begin

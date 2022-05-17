@@ -20,7 +20,7 @@ entity pc is
 end entity;
 
 architecture beh of pc is
-	signal pc_reg: std_logic_vector(11 downto 0);
+	signal pc_reg: std_logic_vector(11 downto 0) := (others=>'0');
 begin
 	process(clk_pc, nreset)
 	begin

@@ -20,7 +20,7 @@ entity micro_controler is
 		IR: in std_logic_vector(7 downto 2) := (others=>'0'); -- IR操作码信息
 		M_uA: in std_logic;		-- 微程地址控制信号
 		CMROM_CS: in std_logic := '1'; -- 控制存储器(uROM)选通信号
-		CM: out std_logic_vector(WORDLENGTH-1 downto 0) := x"003119F37900");
+		CM: out std_logic_vector(WORDLENGTH-1 downto 0));
 end entity;
 
 
@@ -47,9 +47,11 @@ begin
 
 	-- TODO clk_MC ???
 	-- may be we can M_uA <= W0
-	process(M_uA, clk_MC)
+	process(M_uA, clk_MC, nreset)
 	begin
-		if clk_MC'event and clk_MC = '1' then
+		if nreset = '0' then
+			uAR <= IR & "00";
+		elsif clk_MC'event and clk_MC = '1' then
 			-- 入口4对齐的
 			-- align(4)
 			if M_uA = '1' then

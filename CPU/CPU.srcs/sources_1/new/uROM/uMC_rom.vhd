@@ -67,7 +67,7 @@ begin
 	load_rom(uROM);
 
 	dout <= uROM(conv_integer(addr)) when oe = '1'
-		else (others=>'Z');
+		else x"003119F37900";
 
 	-- process(clk_ROM, M_ROM, ROM_EN)
 	-- begin
