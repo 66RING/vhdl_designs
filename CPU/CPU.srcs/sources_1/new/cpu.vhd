@@ -208,6 +208,7 @@ architecture beh of cpu is
 	signal CMROM_CS: std_logic;
 
 	signal clk1, nclk1, clk2, nclk2, w0, w1, w2, w3: std_logic;
+	signal clk_sp, clk_ram, clk_rom: std_logic;
 
 	signal IR_reg: std_logic_vector(7 downto 2) := (others=>'0');
 	signal CM_reg: std_logic_vector(47 downto 0);
@@ -215,6 +216,8 @@ architecture beh of cpu is
 	signal new_pc: std_logic_vector(11 downto 0) := (others=>'0');
 	signal rom_addr_reg: std_logic_vector(11 downto 0) := (others=>'0');	-- ROM读地址输出
 	signal ar_reg: std_logic_vector(6 downto 0);	-- ram addr
+	signal ir_ar_out: std_logic_vector(6 downto 0);
+	signal sp_ar_out: std_logic_vector(6 downto 0);
 	signal data: std_logic_vector(7 downto 0);	-- 总线
 	signal rs_reg: std_logic;	-- source
 	signal rd_reg: std_logic;	-- destination
@@ -260,17 +263,11 @@ begin
 
 	U_clocker: clk_gen port map(clk, nreset, clk1, nclk1, clk2, nclk2, w0, w1, w2, w3);
 
-	-- -- TODO ALU输出到哪??没有锁存
-	-- TODO ALU 有问题，影响data
-	-- TODO fuckin alu
 	U_ALU: alu port map(nclk2, nreset, M_A, M_B, M_F, nALU_EN, nPSW_EN, C0,
 					   -- S, F, data, AC, CY, ZN, OV);
 					   S, F, aluin, aluout, AC, CY, ZN, OV);
 
 
-	-- TODO clk
-	-- ??
-	-- TODO
 	U_pc: pc port map(nclk2,nreset,nLD_PC,M_PC,nPCH,nPCL,
 					new_pc, 	-- TODO PC(11 downto 0) <= IR(7 downto 2)??
 					rom_addr_reg, 	-- TODO ???
@@ -278,18 +275,18 @@ begin
 					pcout); 			-- PC送总线，两次送 nPCH, nPCL
 
 
-	U_rom: rom port map((clk2 and nclk1), nreset, M_ROM, not nROM_EN, rom_addr_reg, romout);
+	clk_rom <= (clk2 and nclk1);
+	U_rom: rom port map(clk_rom, nreset, M_ROM, not nROM_EN, rom_addr_reg, romout);
 
 
 	U_ir: IR port map(nclk2, nreset, LDIR1, LDIR2, LDIR3, nAREN, irin,
 					 IR_reg, 
 					 new_pc,
 					 -- rom_addr_reg,
-					 ar_reg,rs_reg,rd_reg);
+					 ir_ar_out,rs_reg,rd_reg);
 
 
 	-- 设M_uA <= w0
-	-- TODO CMROM_CS hard code 1
 	U_CM: micro_controler port map(data_in_D(7 downto 0), clk2, nreset, IR_reg, w0, nreset, CM_reg);
 
 
@@ -297,20 +294,14 @@ begin
 	-- U_RN: RN port map(nclk2, nreset, not nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
 	-- U_RN: RN port map(nclk2, nreset, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, data);
 
-	-- TODO!!!!!!
-	-- TODO!!!!!! -- change nclk2 -> nclk1
-	-- TODO!!!!!!
-
-	-- TODO modify
-	-- TODO Rn_CS = 1 => rs is rs; Rn_CS = 0 => rs is rd; since we read from rs only
-	-- TODO only work in read mode
-	-- TODO modify
 	U_RN: RN port map(data_in_A(7 downto 0), data_in_B(7 downto 0), nclk1, nreset, Rn_CS, nRi_EN, RDRi, WRRi, rs_reg, rd_reg, rnin, rnout);
 
 
-	U_SP: sp port map(data_in_C(7 downto 0), (clk1 and clk2 and w1), nreset, SP_CS, SP_UP, SP_DN, nSP_EN, ar_reg, spin);
+	clk_sp <= (clk1 and clk2 and w1);
+	U_SP: sp port map(data_in_C(7 downto 0), clk_sp, nreset, SP_CS, SP_UP, SP_DN, nSP_EN, sp_ar_out, spin);
 
-	U_RAM: ram port map((nclk1 and w1), nreset, RAM_CS, nRAM_EN, wr_nRD, ar_reg, ramin, ramout);
+	clk_ram <= (nclk1 and w1);
+	U_RAM: ram port map(clk_ram, nreset, RAM_CS, nRAM_EN, wr_nRD, ar_reg, ramin, ramout);
 
 
 
@@ -329,6 +320,9 @@ begin
 	ramin <= romout when nRAM_EN = '0' else
 			 rnout when nRi_EN = '0' else
 			 (others => 'Z');
+
+	ar_reg <= sp_ar_out when nSP_EN = '0' else
+			  ir_ar_out;
 
 
 

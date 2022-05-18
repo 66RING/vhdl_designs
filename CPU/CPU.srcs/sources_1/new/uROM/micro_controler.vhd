@@ -40,24 +40,30 @@ architecture beh of micro_controler is
 
 
 	signal uAR : std_logic_vector(ADDRLENGTH-1 downto 0);
+	signal uAR_t : std_logic_vector(ADDRLENGTH-1 downto 0) := (others=>'0');
 	signal uIR: std_logic_vector(WORDLENGTH-1 downto 0);
+	signal started: std_logic := '0';
 
 begin
 	uAR_out <= uAR;
+	uAR <= IR & "00" when started = '0' else
+		   uAR_t;
 
-	-- TODO clk_MC ???
 	-- may be we can M_uA <= W0
 	process(M_uA, clk_MC, nreset)
 	begin
 		if nreset = '0' then
-			uAR <= IR & "00";
+			-- uAR_t <= IR & "00";
+			started <= '0';
 		elsif clk_MC'event and clk_MC = '1' then
 			-- 入口4对齐的
 			-- align(4)
 			if M_uA = '1' then
-				uAR <= IR & "00";
+				uAR_t <= IR & "00";
 			elsif M_uA = '0' then
-				uAR <= uIR(7 downto 0);
+				-- 启动后的锁存状态持续到w0结束
+				started <= '1';
+				uAR_t <= uIR(7 downto 0);
 			end if;
 		end if;
 	end process;
@@ -65,12 +71,6 @@ begin
 	-- uIR(7 downto 0): u7 ~ u0
 	CM <= uIR;
 	uROM: uMC_ROM port map(uAR, CMROM_CS, uIR);
-
-
-	process(clk_MC, nreset)
-	begin
-
-	end process;
 
 end beh;
 
