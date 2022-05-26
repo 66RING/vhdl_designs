@@ -3,28 +3,28 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 -- use ieee.numeric.all;
 
--- ¼Ó¼õ³Ë³ý
--- Óë»ò·ÇÒì»ò
+-- ï¿½Ó¼ï¿½ï¿½Ë³ï¿½
+-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 entity alu is
 	port(
 		clk_ALU : in std_logic ;
-		nreset: in std_logic;	-- ¸´Î»
-		M_A, M_B: in std_logic;	-- ÔÝ´æÆ÷Ñ¡Ôñ
-		M_F: in std_logic;		-- ³ÌÐò×´Ì¬×Ö¿ØÖÆÐÅºÅ
-		nALU_EN: in std_logic;	-- ALUÔËËã½á¹ûÊ¹ÄÜ
-		nPSW_EN: in std_logic;	-- PSWÊä³öÊ¹ÄÜ
-		C0: in std_logic;		-- ½øÎ»Î»ÊäÈë
-		S: in std_logic_vector(4 downto 0); 	-- ÔËËãÀàÐÍºÍ²Ù×÷Ñ¡Ôñ
-		F_in: in std_logic_vector(1 downto 0); 	-- ÒÆÎ»¹¦ÄÜÑ¡Ôñ
-		-- data: inout std_logic_vector(7 downto 0); 	-- Êý¾Ý×ÜÏß
-		aluin: in std_logic_vector(7 downto 0); 	-- Êý¾Ý×ÜÏß
-		aluout: out std_logic_vector(7 downto 0); 	-- Êý¾Ý×ÜÏß
-		AC: out std_logic; 	-- °ë½øÎ»±êÖ¾
-		CY: out std_logic; 	-- ½øÎ»±êÖ¾
-		ZN: out std_logic; 	-- Áã±êÖ¾
-		OV: out std_logic); -- Òç³ö±êÖ¾
+		nreset: in std_logic;	-- ï¿½ï¿½Î»
+		M_A, M_B: in std_logic;	-- ï¿½Ý´ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
+		M_F: in std_logic;		-- ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Ö¿ï¿½ï¿½ï¿½ï¿½Åºï¿½
+		nALU_EN: in std_logic;	-- ALUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
+		nPSW_EN: in std_logic;	-- PSWï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
+		C0: in std_logic;		-- ï¿½ï¿½Î»Î»ï¿½ï¿½ï¿½ï¿½
+		S: in std_logic_vector(4 downto 0); 	-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍºÍ²ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
+		F_in: in std_logic_vector(1 downto 0); 	-- ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
+		-- data: inout std_logic_vector(7 downto 0); 	-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		aluin: in std_logic_vector(7 downto 0); 	-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		aluout: out std_logic_vector(7 downto 0); 	-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		AC: out std_logic; 	-- ï¿½ï¿½ï¿½Î»ï¿½ï¿½Ö¾
+		CY: out std_logic; 	-- ï¿½ï¿½Î»ï¿½ï¿½Ö¾
+		ZN: out std_logic; 	-- ï¿½ï¿½ï¿½Ö¾
+		OV: out std_logic); -- ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾
 end entity;
 
 architecture beh of alu is
@@ -41,9 +41,9 @@ architecture beh of alu is
 			M: in std_logic;
 			A: in std_logic_vector(3 downto 0);
 			B: in std_logic_vector(3 downto 0);
-			nCn: in std_logic;		-- ½øÎ»ÊäÈë
-			Cout: out std_logic; 		-- ½øÎ»Êä³ö
-			F: out std_logic_vector(3 downto 0)); 	-- ½á¹û
+			nCn: in std_logic;		-- ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
+			Cout: out std_logic; 		-- ï¿½ï¿½Î»ï¿½ï¿½ï¿½
+			F: out std_logic_vector(3 downto 0)); 	-- ï¿½ï¿½ï¿½
 	end component;
 
 	component alu181 is
@@ -52,16 +52,16 @@ architecture beh of alu is
 			M: in std_logic;
 			A: in std_logic_vector(7 downto 0);
 			B: in std_logic_vector(7 downto 0);
-			CN: in std_logic;		-- ½øÎ»ÊäÈë
-			Cout: out std_logic; 		-- ½øÎ»Êä³ö
-			OV: out std_logic; 		-- ÒÆ³ý±êÖ¾
-			F: out std_logic_vector(7 downto 0)); 	-- ½á¹û
+			CN: in std_logic;		-- ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
+			Cout: out std_logic; 		-- ï¿½ï¿½Î»ï¿½ï¿½ï¿½
+			OV: out std_logic; 		-- ï¿½Æ³ï¿½ï¿½ï¿½Ö¾
+			F: out std_logic_vector(7 downto 0)); 	-- ï¿½ï¿½ï¿½
 	end component;
 
 
 	signal regA_sel, regB_sel: std_logic;
-	signal QA:  std_logic_vector(7 downto 0); 	-- ÔÝ´æÆ÷A
-	signal QB:  std_logic_vector(7 downto 0); 	-- ÔÝ´æÆ÷B
+	signal QA:  std_logic_vector(7 downto 0); 	-- ï¿½Ý´ï¿½ï¿½ï¿½A
+	signal QB:  std_logic_vector(7 downto 0); 	-- ï¿½Ý´ï¿½ï¿½ï¿½B
 
 	signal cout1, cout2: std_logic;
 	signal F1:  std_logic_vector(3 downto 0); 	-- result1
@@ -92,16 +92,10 @@ begin
 
 
 	process(clk_ALU, nreset, nALU_EN, nPSW_EN, M_F)
-		variable QA_F:  std_logic_vector(7 downto 0); 	-- ÔÝ´æÆ÷A
-		variable cnt:  std_logic_vector(7 downto 0); 	-- ÔÝ´æÆ÷A
+		variable QA_F:  std_logic_vector(7 downto 0); 	-- ï¿½Ý´ï¿½ï¿½ï¿½A
+		variable cnt:  std_logic_vector(7 downto 0); 	-- ï¿½Ý´ï¿½ï¿½ï¿½A
 	begin
 		if nreset = '0' then
-			-- QA <= (others=>'0');
-			-- QB <= (others=>'0');
-			-- F <= (others=>'0');
-			-- F1 <= (others=>'0');
-			-- cout1 <= '0';
-			-- cout2 <= '0';
 			AC <= '0';
 			CY <= '0';
 			ZN <= '0';

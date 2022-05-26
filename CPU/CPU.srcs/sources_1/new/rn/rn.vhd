@@ -43,13 +43,11 @@ begin
 			-- 复位
 			R0 <= (others=>'0');
 			R1 <= (others=>'0');
-			-- !!!!!!!!!!
 			-- data <= (others=>'Z');
 		else
 			if clk_RN'event and clk_RN = '1' then
 				if nRi_EN = '0' then -- 如果RN寄存器使能
 					if RDRi = '1' then
-						-- !!!!ZZZZZZZZ”的目的是“为输出端置为高阻态
 						if Rn_CS = '1' then
 							if RS = '0' then	-- 源寄存器选择R0, 从R0读
 								rnout <= R0;

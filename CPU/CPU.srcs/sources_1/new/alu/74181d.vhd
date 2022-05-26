@@ -45,7 +45,6 @@ begin
 				else  F5<= (not A5) and B5;
 				end if;
 			when "0011" => 
-				-- TODO 补码?
 				if M='0' then F5<= "00000" - not Cn;
 				else  F5<="00000";
 				end if;

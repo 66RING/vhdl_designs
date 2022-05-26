@@ -29,11 +29,9 @@ entity rom is
 end entity;
 
 architecture beh of rom is
-	-- TODO ??? 学习语法range<>自动计算?
 	type matrix is array (integer range<>) of std_logic_vector(WORDLENGTH-1 downto 0);
 	signal rom: matrix(0 to 2**ADDRLENGTH-1);
 
-	-- TODO 学习procedure
 	procedure load_rom(signal data_word: out matrix) is
 		file romfile: text open read_mode is "romfile.mem";
 		variable lbuf: line;

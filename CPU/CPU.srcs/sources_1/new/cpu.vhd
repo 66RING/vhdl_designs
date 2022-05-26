@@ -349,7 +349,6 @@ begin
 	M_B <= CM_reg(46);
 	M_F <= CM_reg(45);
 
-	-- TODO 
 	-- S <= CM_reg(44 downto 40);
 	-- S3 & S2 & S1 & S0 & M
 	S <= CM_reg(43 downto 40) & CM_reg(44);
